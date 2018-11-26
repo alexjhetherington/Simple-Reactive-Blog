@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="/fragments/general :: head"/>
+<body>
+		<div th:replace="/fragments/general :: header"/>
+	
+		<h1 th:text="${post.title}">Title</h1>
+			<!--<div th:text="'Created: ' + ${#dates.format(post.createDate, 'dd-MMM-yyyy')} + ' by '">Created by</div>-->
+			<div>Written by <a th:text="${author.username}" th:href="@{'/blog/' + ${author.username}}">User</a></div>
+			<h3 th:text="${post.body}">Body</h3>
+
+			<!--Only show these buttons if the user is the owner of post-->
+			<div sec:authorize="isAuthenticated()" th:if="${username}">
+							<a th:href="@{'/editPost/{id}'(id=${post.id})}">
+									<button type="button" h:text="Edit">Edit</button>
+							</a>
+			</div>
+	
+</body>
+</html>

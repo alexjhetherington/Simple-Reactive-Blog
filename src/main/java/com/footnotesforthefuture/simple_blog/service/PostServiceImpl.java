@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.footnotesforthefuture.simple_blog.model.Post;
+import com.footnotesforthefuture.simple_blog.model.User;
 import com.footnotesforthefuture.simple_blog.repository.PostRepository;
 
 import reactor.core.publisher.Flux;
@@ -27,6 +28,16 @@ public class PostServiceImpl implements PostService{
 	@Override
 	public Mono<Post> save(Post post) {
 		return postRepository.save(post);
+	}
+
+	@Override
+	public Flux<Post> findByAuthor(User user) {
+		return postRepository.findByUserId(user.getId());
+	}
+
+	@Override
+	public Mono<Post> findById(String id) {
+		return postRepository.findById(id);
 	}
 
 }

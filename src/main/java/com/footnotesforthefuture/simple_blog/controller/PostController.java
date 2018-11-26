@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -36,7 +37,7 @@ public class PostController {
     @InitBinder
     public void allowNullStringBinding(WebDataBinder binder)
     {
-    	binder.registerCustomEditor( String.class, new StringTrimmerEditor(true));  
+    	binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));  
     }
     
     //TODO make flow more readable? (weird mixing of reactive and non reactive)
@@ -48,7 +49,7 @@ public class PostController {
     	if(principal != null && principal.getName() != null)
         	userMono = userService.findByUsername(principal.getName());
         else
-        	return Mono.just("/noPrincipal");
+        	return Mono.just("/error");
 
         return userMono
         		.map(user -> {
@@ -57,7 +58,7 @@ public class PostController {
         			model.addAttribute("post", post);
         			return "/editPost";
         		})
-        		.defaultIfEmpty("/UserNotExist");
+        		.defaultIfEmpty("/error");
     }
 
     //TODO User ID / Post ID validation
@@ -73,5 +74,24 @@ public class PostController {
         	return postMono.then(Mono.just("redirect:/"));
         }
     }
+    
+    @RequestMapping(value = "/post/{id}", method = RequestMethod.GET)
+    public Mono<String> getPostWithId(@PathVariable String id,
+                                Principal principal,
+                                Model model) {
+
+        Mono<Post> postMono = postService.findById(id);
+        return postMono
+        		.flatMap(post -> {
+        			Mono<User> authorMono = userService.findById(post.getUserId()); //TODO what if post does not have user ID?
+        			return authorMono.map(author -> {
+        				model.addAttribute("post", post);
+        				model.addAttribute("author", author);
+        				return "/post";
+        			}).defaultIfEmpty("/error");
+        		}).defaultIfEmpty("/error");
+    }
+    
+    
 
 }

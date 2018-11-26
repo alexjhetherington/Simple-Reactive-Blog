@@ -3,6 +3,9 @@
 <div th:replace="/fragments/general :: head"/>
 <body>
 		<div th:replace="/fragments/general :: header"/>
-    <li th:each="item : ${allUsers}" th:text="${item.username}">Item description here...</li>
+		
+    <div th:each="post : ${posts}">
+			<h1><a th:text="${post.title}" th:href="@{'/post/' + ${post.id}}">Title</a></h1>
+		</div>
 </body>
 </html>
