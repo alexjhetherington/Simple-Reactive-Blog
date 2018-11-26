@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="/fragments/general :: head"/>
+<body>
+		<div th:replace="/fragments/general :: header"/>
+		
+		<div th:if="${successMessage}" th:utext="${successMessage}"></div>
+		
+	<form autocomplete="off" th:action="@{/registration}"
+			th:object="${user}" method="post">
+			
+		<div
+				<label th:if="${#fields.hasErrors('username')}" th:errors="*{username}"/>
+				<input type="text" th:field="*{username}" placeholder="Username"/>
+		</div>
+		
+		<div>
+				<label th:if="${#fields.hasErrors('password')}" th:errors="*{password}"/>
+				<input type="password" th:field="*{password}" placeholder="Password"/>
+		</div>
+		<div>
+			<input type="submit" value="Submit"/>
+		</div>
+	</form>
+	
+</body>
+</html>

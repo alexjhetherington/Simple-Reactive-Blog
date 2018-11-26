@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="head">
+    <title>Simple Blog</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+
+<header th:fragment="header">
+    <h1><a th:href="@{/}">Simple Blog</a></h1>
+		<ul>
+			<li><a th:href="@{/}">All Posts</a></li>
+			<li><a href="">My Posts</a></li>
+			<li><a href="">New Post</a></li>
+		</ul> <!-- The below weird formatting (in source) because current version of Thymeleaf security does not all !isAuthenticated() (madness) -->
+		<div th:switch="${#authentication}? ${#authorization.expression('isAuthenticated()')} : ${false}"> 
+				<ul th:case="${true}">
+					<li>Logged in as: <span sec:authentication="name">???</span></li>
+					<li><a th:href="@{/logout}">Logout</a></li>
+				</ul>
+				<ul th:case="${false}">
+					<li><a th:href="@{/registration}">Register</a></li>
+					<li><a th:href="@{/login}">Login</a></li>
+				</ul>
+		</div>
+		<p>---</p>
+</header>
+
+
+</html>

@@ -1,0 +1,8 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="/fragments/general :: head"/>
+<body>
+		<div th:replace="/fragments/general :: header"/>
+    <li th:each="item : ${allUsers}" th:text="${item.username}">Item description here...</li>
+</body>
+</html>
