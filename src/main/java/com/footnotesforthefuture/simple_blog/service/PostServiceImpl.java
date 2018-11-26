@@ -40,4 +40,11 @@ public class PostServiceImpl implements PostService{
 		return postRepository.findById(id);
 	}
 
+	@Override
+	public Mono<Void> deleteById(String id) {
+		return postRepository.deleteById(id);
+	}
+	
+	
+
 }

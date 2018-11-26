@@ -11,4 +11,5 @@ public interface PostService {
 	Flux<Post> findByAuthor(User user);
 	Mono<Post> findById(String id);
 	Mono<Post> save(Post post);
+	Mono<Void> deleteById(String id);
 }

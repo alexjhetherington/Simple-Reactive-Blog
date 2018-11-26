@@ -87,11 +87,49 @@ public class PostController {
         			return authorMono.map(author -> {
         				model.addAttribute("post", post);
         				model.addAttribute("author", author);
+        				if(principal != null && principal.getName().equals(author.getUsername())) {
+        					model.addAttribute("username", author.getUsername());
+        				}
         				return "/post";
         			}).defaultIfEmpty("/error");
         		}).defaultIfEmpty("/error");
     }
     
-    
+    @RequestMapping(value = "/editPost/{id}", method = RequestMethod.GET)
+    public Mono<String> editPostWithId(@PathVariable String id,
+                                 Principal principal,
+                                 Model model) {
 
+    	Mono<Post> postMono = postService.findById(id);
+        return postMono
+        		.flatMap(post -> {
+        			Mono<User> authorMono = userService.findById(post.getUserId()); //TODO what if post does not have user ID?
+        			return authorMono.map(author -> {
+        				if(principal != null && principal.getName().equals(author.getUsername())) {
+        					model.addAttribute("post", post);
+            				return "/editPost";
+        				}
+        				return "/error";
+        			}).defaultIfEmpty("/error");
+        		}).defaultIfEmpty("/error"); //TODO There's got to be a better flow than this
+    }
+    
+    //TODO REFACTOR 
+    @RequestMapping(value = "/post/{id}", method = RequestMethod.DELETE)
+    public Mono<String> deletePostWithId(@PathVariable String id,
+                                   Principal principal) {
+
+    	Mono<Post> postMono = postService.findById(id);    	
+    	
+    	return postMono
+        		.flatMap(post -> {
+        			Mono<User> authorMono = userService.findById(post.getUserId()); //TODO what if post does not have user ID?
+        			return authorMono.flatMap(author -> {
+        				if(principal != null && principal.getName().equals(author.getUsername())) {
+        					return postService.deleteById(id).then(Mono.just("redirect:/"));
+        				}
+        				return Mono.just("/error");
+        			}).defaultIfEmpty("/error");
+        		}).defaultIfEmpty("/error"); //TODO There's got to be a better flow than this
+    }
 }
