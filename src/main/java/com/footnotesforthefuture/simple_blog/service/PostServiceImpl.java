@@ -7,6 +7,7 @@ import com.footnotesforthefuture.simple_blog.model.Post;
 import com.footnotesforthefuture.simple_blog.repository.PostRepository;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 public class PostServiceImpl implements PostService{
@@ -21,6 +22,11 @@ public class PostServiceImpl implements PostService{
 	@Override
 	public Flux<Post> findAllPosts() {
 		return postRepository.findAll();
+	}
+
+	@Override
+	public Mono<Post> save(Post post) {
+		return postRepository.save(post);
 	}
 
 }

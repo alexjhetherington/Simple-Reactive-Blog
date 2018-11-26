@@ -10,7 +10,7 @@ public class Post {
 
 	@Id
     private String id;
-	private User user;
+	private String userId;
 	private String title;
 	private String body;
 	private Date createdDate;
@@ -25,12 +25,12 @@ public class Post {
 		this.id = id;
 	}
 
-	public User getUser() {
-		return user;
+	public String getUserId() {
+		return userId;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	public String getTitle() {

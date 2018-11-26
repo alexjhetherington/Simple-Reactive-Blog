@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="/fragments/general :: head"/>
+<body>
+		<div th:replace="/fragments/general :: header"/>
+	
+			<!--Show this info message only if posted successfully-->
+			<div th:if="${successMessage}" th:utext="${successMessage}"></div>
+
+			<!--New Post Form-->
+							<form autocomplete="off" action="#" th:action="@{/newPost}"
+										th:object="${post}" method="post">
+
+									<h2>Write new post</h2>
+
+									<div>
+											<label th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></label>
+											<input type="text" th:field="*{title}" placeholder="Title"/>
+									</div>
+
+									<div>
+											<label th:if="${#fields.hasErrors('body')}" th:errors="*{body}"></label>
+											<textarea th:field="*{body}" placeholder="Body"/>
+									</div>
+
+									<input type="hidden" th:field="*{userId}"/>
+									<input type="hidden" th:field="*{id}"/>
+
+									<div>
+											<input type="submit" value="Save"/>
+									</div>
+
+							</form>
+
+			<!--Delete Button-->
+			<!--Dont show delete button if the post is brand new-->
+			<div th:if="${post.id}">
+					<form action="#" th:action="@{'/post/{id}'(id=${post.id})}" th:method="delete">
+							<div>
+									<input type="hidden" name="_method" value="delete"/>
+									<button type="submit" th:text="Delete">Delete</button>
+							</div>
+					</form>
+			</div>
+	
+</body>
+</html>

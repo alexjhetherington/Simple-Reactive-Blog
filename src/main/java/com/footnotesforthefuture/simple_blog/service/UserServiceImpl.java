@@ -31,6 +31,11 @@ public class UserServiceImpl implements UserService {
 	public Mono<User> findByUsername(String username) {
 		return userRepository.findFirstByUsername(username);
 	}
+	
+	@Override
+	public Mono<User> findById(String id) {
+		return userRepository.findFirstById(id);
+	}
 
 	@Override
 	public Mono<User> save(User user) {

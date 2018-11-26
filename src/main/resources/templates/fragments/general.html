@@ -12,7 +12,7 @@
 		<ul>
 			<li><a th:href="@{/}">All Posts</a></li>
 			<li><a href="">My Posts</a></li>
-			<li><a href="">New Post</a></li>
+			<li><a th:href="@{/newPost}">New Post</a></li>
 		</ul> <!-- The below weird formatting (in source) because current version of Thymeleaf security does not all !isAuthenticated() (madness) -->
 		<div th:switch="${#authentication}? ${#authorization.expression('isAuthenticated()')} : ${false}"> 
 				<ul th:case="${true}">

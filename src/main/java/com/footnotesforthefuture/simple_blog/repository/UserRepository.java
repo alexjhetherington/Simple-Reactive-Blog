@@ -8,4 +8,5 @@ import reactor.core.publisher.Mono;
 
 public interface UserRepository extends ReactiveMongoRepository<User, String> {
 	Mono<User> findFirstByUsername(String username);
+	Mono<User> findFirstById(String id);
 }
