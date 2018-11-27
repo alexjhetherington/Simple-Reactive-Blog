@@ -10,6 +10,14 @@ Users can create, edit, view and delete blog posts. Any user can view any blogpo
 
 ##Running
 
-TODO
+Requires a MongoDB connection. Adjust the below in application.properties
 
-(How to run app? How to configure DB?)
+`spring.data.mongodb.uri=mongodb://127.0.0.1:27017/SimpleBlogTest`
+
+To create an executable jar using maven: 
+
+`mvn clean package`
+
+The application can be run using:
+
+`java -jar target/simple-blog-0.0.1-SNAPSHOT.jar`
