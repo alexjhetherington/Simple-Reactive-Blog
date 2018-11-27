@@ -33,7 +33,7 @@ public class AuthenticationController {
     }
 	
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
-    public Mono<String> registration(Model model) { //TODO should be mono?
+    public Mono<String> registration(Model model) {
         model.addAttribute("user", new User());
         return Mono.just("/registration");
     }

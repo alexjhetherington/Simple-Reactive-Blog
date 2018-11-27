@@ -40,59 +40,50 @@ public class PostController {
     	binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));  
     }
     
-    //TODO make flow more readable? (weird mixing of reactive and non reactive)
     @RequestMapping(value = "/newPost", method = RequestMethod.GET)
     public Mono<String> newPost(Principal principal,
                           Model model) {
 
-    	Mono<User> userMono;
-    	if(principal != null && principal.getName() != null)
-        	userMono = userService.findByUsername(principal.getName());
-        else
-        	return Mono.just("/error");
-
-        return userMono
-        		.map(user -> {
-        			Post post = new Post();
-        			post.setUserId(user.getId());
-        			model.addAttribute("post", post);
-        			return "/editPost";
-        		})
-        		.defaultIfEmpty("/error");
+    	if(principal != null && principal.getName() != null) {
+    		return userService.findByUsername(principal.getName())
+            		.map(user -> {
+            			Post post = new Post();
+            			post.setUserId(user.getId());
+            			model.addAttribute("post", post);
+            			return "/editPost";
+            		})
+            		.defaultIfEmpty("/error");
+    	}
+        
+    	return Mono.just("/error");
     }
 
-    //TODO User ID / Post ID validation
     @RequestMapping(value = "/newPost", method = RequestMethod.POST)
     public Mono<String> createNewPost(@Valid Post post,
                                 BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
+    	
+        if (bindingResult.hasErrors()) 
             return Mono.just("/editPost");
-        } else {
-        	Mono<Post> postMono = postService.save(post);
-            //return "redirect:/blog/" + post.getUser().getUsername(); //TODO add this
-        	return postMono.then(Mono.just("redirect:/"));
-        }
+        else
+        	return postService.save(post).then(Mono.just("redirect:/")); //"redirect:/blog/" + post.getUser().getUsername(); //TODO add this
     }
     
     @RequestMapping(value = "/post/{id}", method = RequestMethod.GET)
     public Mono<String> getPostWithId(@PathVariable String id,
                                 Principal principal,
                                 Model model) {
-
-        Mono<Post> postMono = postService.findById(id);
-        return postMono
-        		.flatMap(post -> {
-        			Mono<User> authorMono = userService.findById(post.getUserId()); //TODO what if post does not have user ID?
-        			return authorMono.map(author -> {
+    	
+        return postService.findById(id)
+        		.flatMap(post -> 
+        			userService.findById(post.getUserId()).map(author -> {
         				model.addAttribute("post", post);
         				model.addAttribute("author", author);
         				if(principal != null && principal.getName().equals(author.getUsername())) {
         					model.addAttribute("username", author.getUsername());
         				}
         				return "/post";
-        			}).defaultIfEmpty("/error");
-        		}).defaultIfEmpty("/error");
+        			}).defaultIfEmpty("/error")
+        		).defaultIfEmpty("/error");
     }
     
     @RequestMapping(value = "/editPost/{id}", method = RequestMethod.GET)
@@ -100,36 +91,30 @@ public class PostController {
                                  Principal principal,
                                  Model model) {
 
-    	Mono<Post> postMono = postService.findById(id);
-        return postMono
-        		.flatMap(post -> {
-        			Mono<User> authorMono = userService.findById(post.getUserId()); //TODO what if post does not have user ID?
-        			return authorMono.map(author -> {
+        return postService.findById(id)
+        		.flatMap(post -> 
+        			userService.findById(post.getUserId()).map(author -> {
         				if(principal != null && principal.getName().equals(author.getUsername())) {
         					model.addAttribute("post", post);
             				return "/editPost";
         				}
         				return "/error";
-        			}).defaultIfEmpty("/error");
-        		}).defaultIfEmpty("/error"); //TODO There's got to be a better flow than this
+        			}).defaultIfEmpty("/error")
+        		).defaultIfEmpty("/error");
     }
     
-    //TODO REFACTOR 
     @RequestMapping(value = "/post/{id}", method = RequestMethod.DELETE)
     public Mono<String> deletePostWithId(@PathVariable String id,
-                                   Principal principal) {
-
-    	Mono<Post> postMono = postService.findById(id);    	
+                                   Principal principal) {  	
     	
-    	return postMono
-        		.flatMap(post -> {
-        			Mono<User> authorMono = userService.findById(post.getUserId()); //TODO what if post does not have user ID?
-        			return authorMono.flatMap(author -> {
+    	return postService.findById(id)
+        		.flatMap(post -> 
+        			userService.findById(post.getUserId()).flatMap(author -> {
         				if(principal != null && principal.getName().equals(author.getUsername())) {
         					return postService.deleteById(id).then(Mono.just("redirect:/"));
         				}
         				return Mono.just("/error");
-        			}).defaultIfEmpty("/error");
-        		}).defaultIfEmpty("/error"); //TODO There's got to be a better flow than this
+        			}).defaultIfEmpty("/error")
+        		).defaultIfEmpty("/error");
     }
 }
